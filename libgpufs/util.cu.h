@@ -59,7 +59,8 @@
 #define GET_SMID( SMID ) \
 	asm volatile ("mov.u32 %0, %%smid;" : "=r"(SMID) :);
 	
-	
+#define FULL_MASK 0xffffffff
+
 __forceinline__ __device__ void bzero_thread(volatile void* dst, uint size)
 {
 
@@ -373,29 +374,29 @@ __device__ inline BroadcastHelper broadcast(BroadcastHelper b, int leader = 0)
 {
 	BroadcastHelper t;
 
-	t.i[0] = __shfl( b.i[0], leader );
-	t.i[1] = __shfl( b.i[1], leader );
+	t.i[0] = __shfl_sync(FULL_MASK, b.i[0], leader );
+	t.i[1] = __shfl_sync(FULL_MASK, b.i[1], leader );
 
 	return t;
 }
 
 __device__ inline int broadcast(int b, int leader = 0)
 {
-	b = __shfl( b, leader );
+	b = __shfl_sync(FULL_MASK, b, leader );
 
 	return b;
 }
 
 __device__ inline unsigned int broadcast(unsigned int b, int leader = 0)
 {
-	b = __shfl( b, leader );
+	b = __shfl_sync(FULL_MASK, b, leader );
 
 	return b;
 }
 
 __device__ inline float broadcast(float b, int leader = 0)
 {
-	b = __shfl( b, leader );
+	b = __shfl_sync(FULL_MASK, b, leader );
 
 	return b;
 }

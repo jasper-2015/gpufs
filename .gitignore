@@ -1,0 +1,3 @@
+libgpufs/release/*.o
+libgpufs/release/*.a
+samples/grep_text/*.o
