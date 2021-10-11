@@ -7,25 +7,17 @@
 #* ASPLOS13, March 2013, Houston,USA
 #*/
 
-CUDA_ROOT:=/usr/local/cuda
-GPUFSROOTDIR?=../../
+all: cp
 
-GPUFSINCLUDEDIR=$(GPUFSROOTDIR)/include
-GPUFSLIBDIR=$(GPUFSROOTDIR)/lib
+LIBGPUFSDIR=../../libgpufs/
 
-CUDA_INCLUDE=-I$(GPUFSROOTDIR)/include -I$(CUDA_ROOT)/include
-CUDA_LIB=-L$(GPUFSROOTDIR)/lib -L$(CUDA_ROOT)/lib64 -lgpufs -lcudart
-
-CXXFLAGS=-O2 $(CUDA_INCLUDE) $(CUDA_LIB)
-NVCCFLAGS=-O2 $(CUDA_INCLUDE) $(CUDA_LIB) --std=c++11 --generate-code code=sm_35,arch=compute_35 -maxrregcount 32
-
-NVCC=$(CUDA_ROOT)/bin/nvcc
+include $(LIBGPUFSDIR)/Makefile
 
 cp: cp_cuda.o
-	$(NVCC) $(NVCCFLAGS) --cudart static -link -o "cp" cp_cuda.o
+	$(NVCC) --relocatable-device-code=true -o cp cp_cuda.o -I$(LIBGPUFSDIR) -I../../gpufs_con_lib.user/ $(LIBGPUFSDIR)/release/libgpufs.a
 
 cp_cuda.o: cp.cu
-	$(NVCC) $(NVCCFLAGS) -dc cp.cu -o cp_cuda.o
+	$(NVCC) -dc -I$(LIBGPUFSDIR) -I../../gpufs_con_lib.user/ cp.cu -o cp_cuda.o
 
 PHONY:  clean
 

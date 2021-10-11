@@ -7,14 +7,21 @@
 #* ASPLOS13, March 2013, Houston,USA
 #*/
 
+all: bigmatrix_cpu bigmatrix_nofs bigmatrix_nofs_naive fs
 
-
-CXXFLAGS=-fopenmp -g -O2
+CXXFLAGS=-fopenmp
 
 LIBGPUFSDIR=../../libgpufs/
 
 PAYLOAD=bigmatrix_mmap.cu
+
 include $(LIBGPUFSDIR)/Makefile
+
+fs: fs.o
+	$(NVCC) --relocatable-device-code=true -o fs fs.o -I$(LIBGPUFSDIR) -I../../gpufs_con_lib.user/ $(LIBGPUFSDIR)/release/libgpufs.a
+
+fs.o: fs.cu
+	$(NVCC) -dc -I$(LIBGPUFSDIR) -I../../gpufs_con_lib.user/ -c $<
 
 bigmatrix_cpu.o: bigmatrix_cpu.cpp 
 
